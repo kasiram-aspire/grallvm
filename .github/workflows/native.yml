@@ -1,0 +1,41 @@
+name: Build Windows Native Executable
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  native-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM 17
+        uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: graalvm
+          java-version: '17'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: true
+
+      - name: Verify Installation
+        run: |
+          java -version
+          native-image --version
+          mvn -version
+
+      - name: Build Native Executable
+        run: mvn -Pnative -DskipTests native:compile
+
+      - name: Upload Native Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-native-exe
+          path: |
+            target/*.exe
+            target/native/**
