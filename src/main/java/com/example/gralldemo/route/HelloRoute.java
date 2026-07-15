@@ -10,7 +10,9 @@ public class HelloRoute extends RouteBuilder {
     public void configure() {
 
         restConfiguration()
-                .component("platform-http");
+                .component("netty-http")
+                .host("0.0.0.0")
+                .port(8080);
 
         rest("/hello")
                 .get()
